@@ -848,8 +848,24 @@ dhcp_handle_ack(struct netif *netif, struct dhcp_msg *msg_in)
         continue;
     }
 #endif
+#if ESP_MULTIPLE_DNS
+    if (n >= 2) {
+      break;
+    }
+    ip_addr_set_ip4_u32_val(dns_addr, lwip_htonl(dhcp_get_option_value(dhcp, DHCP_OPTION_IDX_DNS_SERVER + n)));
+    if(netif->name[0] == 's' && netif->name[1] == 't') {
+      if(!ip_addr_isany(&dns_addr)) {
+      dns_setserver(DNS_WIFI_SERVER_START_INDEX + n, &dns_addr);
+      }
+    } else if(netif->name[0] == 'e' && netif->name[1] == 'n') {
+      if(!ip_addr_isany(&dns_addr)) {
+      dns_setserver(DNS_ETH_SERVER_START_INDEX + n, &dns_addr);
+      }
+    }
+#else
     ip_addr_set_ip4_u32_val(dns_addr, lwip_htonl(dhcp_get_option_value(dhcp, DHCP_OPTION_IDX_DNS_SERVER + n)));
     dns_setserver(n, &dns_addr);
+#endif /* ESP_MULTIPLE_DNS */
   }
 #endif /* LWIP_DHCP_PROVIDE_DNS_SERVERS */
 }
