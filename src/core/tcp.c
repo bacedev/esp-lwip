@@ -200,9 +200,11 @@ static void tcp_ext_arg_invoke_callbacks_destroyed(struct tcp_pcb_ext_args *ext_
 void
 tcp_init(void)
 {
+#if CONFIG_LWIP_USE_RANDOM_PORT
 #ifdef LWIP_RAND
   tcp_port = TCP_ENSURE_LOCAL_PORT_RANGE(LWIP_RAND());
 #endif /* LWIP_RAND */
+#endif /* CONFIG_LWIP_USE_RANDOM_PORT */
 }
 
 /** Free a tcp pcb */
